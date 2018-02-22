@@ -15,6 +15,7 @@
 
 import atexit
 import os
+import subprocess
 import sys
 
 import debtcollector.moves
@@ -227,6 +228,9 @@ class BaseTestCase(testtools.testcase.WithAttributes,
 
     def tearDown(self):
         super(BaseTestCase, self).tearDown()
+        if self._TestCase__details:
+            if CONF.debug.run_on_teardown:
+                BaseTestCase.run_on_teardown(self)
         # insert pdb breakpoint when pause_teardown is enabled
         if CONF.pause_teardown:
             BaseTestCase.insert_pdb_breakpoint()
@@ -240,6 +244,14 @@ class BaseTestCase(testtools.testcase.WithAttributes,
         """
         import pdb
         pdb.set_trace()
+
+    @classmethod
+    def run_on_teardown(cls, self):
+        """Run an arbitrary shell command on test teardown"""
+
+        test_name = self.__str__()
+        subprocess.call(CONF.debug.run_on_teardown, shell=True, env={'TEST_NAME': '%s' % test_name})
+        # subprocess.check_output(CONF.debug.run_on_teardown, shell=True)
 
     @classmethod
     def skip_checks(cls):

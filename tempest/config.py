@@ -1074,6 +1074,18 @@ Expected values for this field are:
 
 If nothing is specified, this feature is not enabled. To trace everything
 specify .* as the regex.
+"""),
+
+    cfg.StrOpt('run_on_teardown',
+                default='',
+                help="""Shell command to run on each test's teardown.
+
+This can be helpful in analysis of failures, especially in a CI 
+environment where pausing failing tests may be problematic.
+Use with caution, especially in parallelized testing.
+Example of tempest.conf option
+[debug]
+run_on_teardown = "curl -s http://file.tlv.redhat.com/~wznoinsk/overcloud_ovs_dump.sh | bash -s"
 """)
 ]
 
@@ -1099,6 +1111,7 @@ A test can be run as follows:
 or
  $ python -m testtools.run TEST_ID"""),
 ]
+
 
 _opts = [
     (auth_group, AuthGroup),
